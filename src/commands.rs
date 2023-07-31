@@ -3,9 +3,7 @@ use dirs;
 use colored::*;
 
 pub fn ls() {
-    let home_dir = dirs::home_dir().unwrap();
-    let shbin_path = home_dir.join(".shbin");
-
+    let shbin_path = dirs::home_dir().unwrap().join(".shbin");
     let entries = fs::read_dir(shbin_path).unwrap();
 
     println!("{:<6} {:<20} {:<6}", 
@@ -25,8 +23,13 @@ pub fn ls() {
 }
 
 pub fn add(path: &str) {
-    println!("Adding {:?}", path);
-    // TODO: implement the add functionality here
+    let shbin_path = dirs::home_dir().unwrap().join(".shbin");
+    let new_file_path = shbin_path.join(path);
+    
+    let _ = fs::copy(path, new_file_path);
+
+    println!("Added {:?}!", path);
+    ls();
 }
 
 pub fn rm(path: &str) {
