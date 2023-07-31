@@ -25,7 +25,7 @@ pub fn ls() {
 pub fn add(path: &str) {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin");
     let new_file_path = shbin_path.join(path);
-    
+
     let _ = fs::copy(path, new_file_path);
 
     println!("Added {:?}!", path);
@@ -33,8 +33,13 @@ pub fn add(path: &str) {
 }
 
 pub fn rm(path: &str) {
-    println!("Removing {:?}", path);
-    // TODO: implement the rm functionality here
+    let shbin_path = dirs::home_dir().unwrap().join(".shbin");
+    let file_path = shbin_path.join(path);
+    
+    let _ = fs::remove_file(file_path);
+
+    println!("Removed {:?}!", path);
+    ls();
 }
 
 pub fn push() {
