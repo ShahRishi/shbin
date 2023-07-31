@@ -5,15 +5,15 @@ pub fn ls() {
 
 pub fn add(path: &str) {
     println!("Adding {:?}", path);
-    // implement the add functionality here
+    // TODO: implement the add functionality here
 }
 
 pub fn rm(path: &str) {
     println!("Removing {:?}", path);
-    // implement the rm functionality here
+    // TODO: implement the rm functionality here
 }
 
 pub fn push() {
     println!("You typed push");
-    // implement the push functionality here
+    // TODO: implement the push functionality here
 }

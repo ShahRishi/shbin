@@ -26,13 +26,13 @@ enum Commands {
     Push,  
 }
 
+// TODO: add args to documentation
 #[derive(Args)]
 struct PathArgs {
     /// path to file
     #[arg(name = "path to file")]
     path: String,
 }
-
 
 fn main() {
     let cli: Cli = Cli::parse();
