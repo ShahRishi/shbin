@@ -1,6 +1,9 @@
+// commands.rs
+
 use std::fs;
 use dirs;
 use colored::*;
+use crate::utils::zip_shbin;
 
 pub fn ls() {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin");
@@ -30,6 +33,7 @@ pub fn add(path: &str) {
 
     println!("Added {:?}!", path);
     ls();
+    push()
 }
 
 pub fn rm(path: &str) {
@@ -40,9 +44,13 @@ pub fn rm(path: &str) {
 
     println!("Removed {:?}!", path);
     ls();
+    push()
 }
 
 pub fn push() {
-    println!("You typed push");
-    // TODO:implement the push functionality here
+    let success = zip_shbin();
+    match success {
+        0 => println!("Compression successful!"),
+        _ => println!("Compression failed!"),
+    }
 }
