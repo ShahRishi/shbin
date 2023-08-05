@@ -1,7 +1,10 @@
 // main.rs
+mod utils;
 mod commands;
+
 use clap::{Args, Parser, Subcommand};
 use commands::{ls, add, rm, push};
+use tokio;
 
 // Shared bin controller
 #[derive(Parser)]
@@ -34,7 +37,8 @@ struct PathArgs {
     path: String,
 }
 
-fn main() {
+#[tokio::main] // Convert main function into a tokio async runtime
+async fn main() {
     let cli: Cli = Cli::parse();
 
     match &cli.command {
@@ -48,8 +52,7 @@ fn main() {
             rm(&path.path);
         },
         Commands::Push => {
-            push();
+            push().await; // await the result of push
         },
     }
 }
-

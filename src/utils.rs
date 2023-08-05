@@ -1,6 +1,4 @@
 // utils.rs
-// sourced from https://github.com/zip-rs/zip/blob/master/examples/write_dir.rs
-
 use std::io::prelude::*;
 use std::io::{Seek, Write};
 use std::iter::Iterator;
@@ -13,7 +11,37 @@ use walkdir::{DirEntry, WalkDir};
 
 use dirs;
 
-// written for shbin
+// post zipped file to server
+pub async fn post_shbin() {
+    let path = dirs::home_dir().unwrap().join("packet-sender.zip").into_os_string().into_string().unwrap();
+
+    // read the whole file
+    let contents = tokio::fs::read(path).await.unwrap();
+    
+    // create a part
+    let part = reqwest::multipart::Part::bytes(contents)
+        .file_name("packet-sender.zip")
+        .mime_str("application/octet-stream").unwrap();
+
+    // create multipart form
+    let form = reqwest::multipart::Form::new()
+        .part("file", part);
+        
+    let client = reqwest::Client::new();
+    let _ = client.post("http://localhost:8080/push")
+        .multipart(form)
+        .send()
+        .await
+        .unwrap();
+}
+
+pub async fn rm_zip() {
+    let path = dirs::home_dir().unwrap().join("packet-sender.zip").into_os_string().into_string().unwrap();
+    tokio::fs::remove_file(path).await.unwrap();
+}
+
+
+// zip ~/.shbin --> ~/packet-sender.zip
 pub fn zip_shbin() -> i32 {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin").into_os_string().into_string().unwrap();
     let output_path = dirs::home_dir().unwrap().join("packet-sender.zip").into_os_string().into_string().unwrap();
@@ -28,7 +56,7 @@ pub fn zip_shbin() -> i32 {
 
     0
 }
-// from zip-rs
+// from zip-rs (https://github.com/zip-rs/zip/blob/master/examples/write_dir.rs)
 fn zip_dir<T>(
     it: &mut dyn Iterator<Item = DirEntry>,
     prefix: &str,
@@ -51,7 +79,7 @@ where
         // Write file or directory explicitly
         // Some unzip tools unzip files with directory paths correctly, some do not!
         if path.is_file() {
-            println!("adding file {path:?} as {name:?} ...");
+            //println!("adding file {path:?} as {name:?} ...");
             #[allow(deprecated)]
             zip.start_file_from_path(name, options)?;
             let mut f = File::open(path)?;
@@ -62,7 +90,7 @@ where
         } else if !name.as_os_str().is_empty() {
             // Only if not root! Avoids path spec / warning
             // and mapname conversion failed error on unzip
-            println!("adding dir {path:?} as {name:?} ...");
+            //println!("adding dir {path:?} as {name:?} ...");
             #[allow(deprecated)]
             zip.add_directory_from_path(name, options)?;
         }
@@ -71,7 +99,7 @@ where
     Result::Ok(())
 }
 
-// from zip-rs
+// from zip-rs (https://github.com/zip-rs/zip/blob/master/examples/write_dir.rs)
 fn doit(
     src_dir: &str,
     dst_file: &str,

@@ -4,7 +4,10 @@ use std::fs;
 use dirs;
 use colored::*;
 use crate::utils::zip_shbin;
+use crate::utils::post_shbin;
+use crate::utils::rm_zip;
 
+// TODO: Make file operations async
 pub fn ls() {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin");
     let entries = fs::read_dir(shbin_path).unwrap();
@@ -25,6 +28,7 @@ pub fn ls() {
     }
 }
 
+// TODO: Make file operations async
 pub fn add(path: &str) {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin");
     let new_file_path = shbin_path.join(path);
@@ -33,9 +37,9 @@ pub fn add(path: &str) {
 
     println!("Added {:?}!", path);
     ls();
-    push()
 }
 
+// TODO: Make file operations async
 pub fn rm(path: &str) {
     let shbin_path = dirs::home_dir().unwrap().join(".shbin");
     let file_path = shbin_path.join(path);
@@ -44,13 +48,16 @@ pub fn rm(path: &str) {
 
     println!("Removed {:?}!", path);
     ls();
-    push()
 }
 
-pub fn push() {
-    let success = zip_shbin();
-    match success {
-        0 => println!("Compression successful!"),
-        _ => println!("Compression failed!"),
-    }
+pub async fn push() {
+    // compress shbin directory
+    zip_shbin();
+
+    // post compressed file
+    post_shbin().await;
+
+    // delete zip
+    rm_zip().await;
+
 }
